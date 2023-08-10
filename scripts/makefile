@@ -8,6 +8,10 @@
 #
 jobname = abstract
 
+# open file in nvim and automatically toggle TrueZen Ataraxis to ON
+# 	so that lines are narrower to reduce eye fatigue
+open:
+	nvim -c TZAtaraxis $(jobname).tex
 
 # get a word count, counts for sections and subsections will be 
 # 	added at bottom of output
