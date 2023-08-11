@@ -5,18 +5,13 @@
 #
 # replace this with the name of your latex file
 # 	example: <filename>.tex -> jobname = <filename>
+#
 jobname = abstract
 
 # open file in nvim and automatically toggle TrueZen Ataraxis to ON
 # 	so that lines are narrower to reduce eye fatigue
 open:
 	nvim -c TZAtaraxis $(jobname).tex
-
-# build pdf and then view the output file in the system's default
-# 	pdf document viewer (Evince on Pop!_OS) which can be rather tricky to 
-# 	find
-view: pdf
-	xdg-open $(jobname).pdf
 
 # get a word count, counts for sections and subsections will be 
 # 	added at bottom of output

@@ -1,0 +1,74 @@
+#!/bin/bash
+# Author: Garrett Wells
+# Date: 08/11/2023
+#
+# This script defines a toolkit api for LaTeX projects.
+#
+# The directory structure will be structured as follows:
+#
+#   ./
+#   |
+#   |
+#   *--> src/
+#   |        makefile
+#   |        <latex source files>.tex
+#   |
+#   |
+#   *--> include/
+#   |           |
+#   |           *--> diagrams/
+#   |           |
+#   |           *--> pictures/
+#   |
+#   |
+#   *--> bibliography/
+#   |                 <bib_file>.bib
+#   |
+#   *--> scripts/
+
+function make_directory_structure () {
+    # make directory structure
+    mkdir -p ./$REPLY/src ./$REPLY/include/pictures ./$REPLY/include/diagrams ./$REPLY/bibliography
+    # create main latex file
+    touch ./$REPLY/src/$REPLY.tex
+}
+
+function clone_latex_toolkit () {
+    # clone toolkit from github
+    git clone https://github.com/grwells/latex-toolkit.git ./$REPLY/scripts
+    # copy makefile to src directory
+    cp ./$REPLY/scripts/latex-toolkit/scripts/makefile ./$REPLY/src
+}
+
+function create_new_project () {
+    # create a new LaTeX project directory
+    echo "********************************
+    * LaTeX Project: $REPLY*
+    ********************************"
+    make_directory_structure
+    clone_latex_toolkit
+}
+
+read -p "enter project name > "
+
+# process command line arguments
+case "$1" in
+
+    wc) texcount ./$REPLY/src/$REPLY.tex
+        ;;
+
+    pdf) pdflatex ./$REPLY/src/$REPLY.tex
+         ;;
+
+    pdf-print) pdflatex $REPLY.tex && lpr $REPLY.pdf
+               ;;
+
+    open) nvim -c TZAtaraxis $REPLY.tex
+        ;;
+
+    create) create_new_project
+        ;;
+
+    *)  echo "invalid option"
+        ;;
+esac
