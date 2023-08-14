@@ -28,45 +28,48 @@
 
 function make_directory_structure () {
     # make directory structure
-    mkdir -p ./$REPLY/src ./$REPLY/include/pictures ./$REPLY/include/diagrams ./$REPLY/bibliography
+    mkdir -p ./$1/src ./$1/include/pictures ./$1/include/diagrams ./$1/bibliography
+    echo "moving to project directory $1/"
     # create main latex file
-    touch ./$REPLY/src/$REPLY.tex
+    touch ./$1/src/$1.tex
 }
 
 function clone_latex_toolkit () {
     # clone toolkit from github
-    git clone https://github.com/grwells/latex-toolkit.git ./$REPLY/scripts
-    # copy makefile to src directory
-    cp ./$REPLY/scripts/latex-toolkit/scripts/makefile ./$REPLY/src
+    git clone https://github.com/grwells/latex-toolkit.git ./scripts
 }
 
 function create_new_project () {
     # create a new LaTeX project directory
-    echo "********************************
-    * LaTeX Project: $REPLY*
+    echo "
+    ********************************
+    * LaTeX Project: $1      *
     ********************************"
-    make_directory_structure
-    clone_latex_toolkit
+    make_directory_structure $1
+    clone_latex_toolkit $1
 }
 
-read -p "enter project name > "
+
+project_name=$(basename $(pwd))
 
 # process command line arguments
 case "$1" in
 
-    wc) texcount ./$REPLY/src/$REPLY.tex
+    wc) texcount ./src/$project_name.tex
         ;;
 
-    pdf) pdflatex ./$REPLY/src/$REPLY.tex
+    pdf) pdflatex ./src/$project_name.tex
          ;;
 
-    pdf-print) pdflatex $REPLY.tex && lpr $REPLY.pdf
+    pdf-print) pdflatex ./src/$project_name.tex && lpr ./src/$project_name.pdf
                ;;
 
-    open) nvim -c TZAtaraxis $REPLY.tex
+    open) nvim -c TZAtaraxis ./src/$project_name.tex
         ;;
 
-    create) create_new_project
+    create) 
+        read -p "enter project name > "
+        create_new_project $REPLY
         ;;
 
     *)  echo "invalid option"
