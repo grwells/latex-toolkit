@@ -58,13 +58,26 @@ case "$1" in
     wc) texcount ./src/$project_name.tex
         ;;
 
-    pdf) pdflatex ./src/$project_name.tex
-         ;;
+    pdf) 
+        cd ./src/
+        pdflatex $project_name.tex
+        ;;
 
-    pdf-print) pdflatex ./src/$project_name.tex && lpr ./src/$project_name.pdf
-               ;;
+    pdf-print) 
+        cd ./src/
+        pdflatex $project_name.tex && lpr $project_name.pdf
+        ;;
 
     open) nvim -c TZAtaraxis ./src/$project_name.tex
+        ;;
+
+    view) xdg-open ./src/$project_name.pdf
+        ;;
+
+    pdf-view)
+        cd ./src/
+        pdflatex $project_name.tex
+        xdg-open $project_name.pdf
         ;;
 
     create) 
