@@ -27,50 +27,6 @@
 --   *--> scripts/
 --]]
 
-local argparse = require "argparse"
-
--- [[
--- Define arguments and flags for this program to be printed by argparse.
--- ]]
-local parser = argparse() 
-    :name "LaTeX Tool-Kit"
-    :description [[
-.____         ___________    ____  ___       _______________  __.
-|    |   _____\__    ___/___ \   \/  /       \__    ___/    |/ _|
-|    |   \__  \ |    |_/ __ \ \     /   ______ |    |  |      <  
-|    |___ / __ \|    |\  ___/ /     \  /_____/ |    |  |    |  \ 
-|_______ (____  /____| \___  >___/\  \         |____|  |____|__ \
-        \/    \/           \/      \_/                         \/
-
-A script for autogenerating, evaluating, and managing any LaTeX project. 
-]]
-
-parser:flag "-c --word-count"
-    :description "print word count summary by section"
-
-parser:flag "-g --generate-pdf"
-    :description "compile and generate a pdf of the latex document in ./src/ using pdflatex command"
-
-parser:flag "-p --print-pdf"
-    :description "compile and generate a pdf and print on default printer"
-
-parser:flag "-o --open-document" 
-    :description "open the LaTeX document in ./src/ in NeoVim for editing"
-
-parser:flag "-v --view" 
-    :description "open generated pdf without compiling"
-
-parser:flag "-w --pdf-view" 
-    :description "generate and open the pdf in the default system pdf viewer"
-
-parser:option "-+ --create" 
-    :description "generate a new project directory and default LaTeX file from scratch"
-    :default "none"
-    :args "?"     
-
-
-local args = parser:parse()
-
 function make_directory_structure (base) 
  -- make directory structure, substituting in base as project name
     mkdir_cmd_str = string.format("mkdir -p ./%s/src ./%s/include/pictures ./%s/include/diagrams ./%s/bibliography", base, base, base, base)
@@ -115,36 +71,92 @@ function infer_project_name (t)
     return base
 end
 
+local argparse = require "argparse"
 
-function handle_args ()
+-- [[
+-- Define arguments and flags for this program to be printed by argparse.
+-- ]]
+local parser = argparse() 
+    :name "LaTeX - Toolkit"
+    :description [[
+██╗      █████╗ ████████╗███████╗██╗  ██╗              ████████╗██╗  ██╗
+██║     ██╔══██╗╚══██╔══╝██╔════╝╚██╗██╔╝              ╚══██╔══╝██║ ██╔╝
+██║     ███████║   ██║   █████╗   ╚███╔╝     █████╗       ██║   █████╔╝ 
+██║     ██╔══██║   ██║   ██╔══╝   ██╔██╗     ╚════╝       ██║   ██╔═██╗ 
+███████╗██║  ██║   ██║   ███████╗██╔╝ ██╗                 ██║   ██║  ██╗
+╚══════╝╚═╝  ╚═╝   ╚═╝   ╚══════╝╚═╝  ╚═╝                 ╚═╝   ╚═╝  ╚═╝
+                                                                        
 
-    if args.word_count then
-        local proj_name = infer_project_name{}
-        os.execute(string.format("texcount ./src/main.tex", proj_name))
-    end
+A script for autogenerating, evaluating, and managing any LaTeX project. 
+]]
 
-    if args.generate_pdf then
-        local proj_name = infer_project_name{}
-        os.execute(string.format("cd ./src/ && pdflatex main.tex", proj_name))
-    end
-
-    if args.create then
-        -- do something here
-        if args.create[1] == nil then
-            -- read project name from input
-            p_name = ""
-            repeat 
-                io.write("enter name for project -> ")
-                p_name = io.read()
-                io.write("'", p_name, "'", " : is this the name you wish to use?(y/n) -> ")
-            until io.read() == "y" 
-
-            create_new_project(p_name)
-
-        else
-            create_new_project(args.create[1])
+parser:flag "-c --word-count"
+    :description "print word count summary by section"
+    :action(
+        function(args)
+            os.execute([[texcount ./src/main.tex]])
         end
-    end
-end
+    )
 
-handle_args()
+parser:flag "-g --generate-pdf"
+    :description "compile and generate a pdf of the latex document in ./src/ using pdflatex command"
+    :action(
+        function(args)
+            os.execute([[cd ./src/ && pdflatex main.tex]])
+        end
+    )
+
+parser:flag "-p --print-pdf"
+    :description "compile and generate a pdf and print on default printer"
+    :action(
+        function(args)
+            os.execute([[cd ./src/ && pdflatex main.tex]])
+            os.execute([[lpr main.tex]])
+        end
+    )
+
+parser:flag "-o --open-document" 
+    :description "open the LaTeX document in ./src/ in NeoVim for editing"
+    :action(
+        function(args)
+            os.execute([[nvim ./src/main.tex]])
+        end
+    )
+
+parser:flag "-v --view" 
+    :description "open generated pdf without compiling"
+    :action(
+        function(args)
+            os.execute([[xdg-open ./src/main.tex]])
+        end
+    )
+
+parser:flag "-w --pdf-view" 
+    :description "generate and open the pdf in the default system pdf viewer"
+    :action(
+        function(args)
+            os.execute([[cd ./src/ && pdflatex main.tex && xdg-open main.pdf]])
+        end
+    )
+
+parser:flag "-t --tree-view"
+    :description "list directory structure and files in tree format"
+    :action(
+        function(args)
+            os.execute([[find . | sed -e "s/[^-][^\/]*\//  |/g" -e "s/|\([^ ]\)/|-\1/"]])
+        end
+    )
+
+parser:option "-n --new-project" 
+    :description "generate a new project directory and default LaTeX file from scratch"
+    :args "?"     
+    :action(
+        function(args, _, fn)
+            print("project name: ", fn[1])
+            make_directory_structure(fn[1])
+        end
+    )
+
+
+local args = parser:parse()
+
