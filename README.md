@@ -1,7 +1,22 @@
-# latex-toolkit
-Documentation and scripts to help with latex.
+# LaTeX - Toolkit
 
-| Directory | Contents | 
-| :---: | --- |
-| [`scripts/`](scripts/) | contains automation scripts for working with latex files to perform word counts, pdf conversions, and printing |
+This is a Lua script which can be used to manage and standardize the file structure of your LaTeX projects on the command line.
+
+# Installation
+
+Clone repository and run installation script with:
+
+```bash
+git clone https://github.com/grwells/latex-toolkit.git &&
+./install.sh
+```
+
+Afterward, verify installation with:
+
+```
+$ ltk -h
+# or
+$ latextk -h
+```
+
 
