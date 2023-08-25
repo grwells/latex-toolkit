@@ -34,7 +34,16 @@ local argparse = require "argparse"
 -- ]]
 local parser = argparse() 
     :name "LaTeX Tool-Kit"
-    :description "A script for autogenerating, evaluating, and managing any LaTeX project."
+    :description [[
+.____         ___________    ____  ___       _______________  __.
+|    |   _____\__    ___/___ \   \/  /       \__    ___/    |/ _|
+|    |   \__  \ |    |_/ __ \ \     /   ______ |    |  |      <  
+|    |___ / __ \|    |\  ___/ /     \  /_____/ |    |  |    |  \ 
+|_______ (____  /____| \___  >___/\  \         |____|  |____|__ \
+        \/    \/           \/      \_/                         \/
+
+A script for autogenerating, evaluating, and managing any LaTeX project. 
+]]
 
 parser:flag "-c --word-count"
     :description "print word count summary by section"
