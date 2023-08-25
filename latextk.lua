@@ -119,7 +119,7 @@ parser:flag "-o --open-document"
     :description "open the LaTeX document in ./src/ in NeoVim for editing"
     :action(
         function(args)
-            os.execute([[nvim ./src/main.tex]])
+            os.execute([[nvim +TZAtaraxis ./src/main.tex]])
         end
     )
 
