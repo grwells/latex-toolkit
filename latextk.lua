@@ -111,7 +111,7 @@ parser:flag "-p --print-pdf"
     :action(
         function(args)
             os.execute([[cd ./src/ && pdflatex main.tex]])
-            os.execute([[lpr main.tex]])
+            os.execute([[lpr ./src/main.pdf]])
         end
     )
 
