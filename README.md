@@ -2,6 +2,10 @@
 
 This is a Lua script which can be used to manage and standardize the file structure of your LaTeX projects on the command line.
 
+### Example Output
+
+![help options](images/help_output.png)
+
 # Installation
 
 Clone repository and run installation script with:
