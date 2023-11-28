@@ -65,7 +65,6 @@ parser:flag "-w --pdf-view"
 
 parser:option "-+ --create" 
     :description "generate a new project directory and default LaTeX file from scratch"
-    :default "none"
     :args "?"     
 
 
