@@ -40,6 +40,11 @@ function clone_latex_toolkit ()
     os.execute([[git clone https://github.com/grwells/latex-toolkit.git ./scripts]])
 end
 
+function file_exists(name)
+   local f=io.open(name,"r")
+   if f~=nil then io.close(f) return true else return false end
+end
+
 
 function create_new_project (base) 
     -- create a new LaTeX project directory
@@ -135,7 +140,12 @@ parser:flag "-w --pdf-view"
     :description "generate and open the pdf in the default system pdf viewer"
     :action(
         function(args)
-            os.execute([[cd ./src/ && pdflatex main.tex && xdg-open main.pdf]])
+            if file_exists("./src/main.pdf") then
+                io.write("[DEBUG] building for bibtex")
+                os.execute([[cd ./src/ && pdflatex main.tex && bibtex main && pdflatex main.tex && xdg-open main.pdf]])
+            else
+                os.execute([[cd ./src/ && pdflatex main.tex && xdg-open main.pdf]])
+            end
         end
     )
 
