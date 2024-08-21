@@ -141,7 +141,7 @@ parser
 	:description("compiles with pdflatex/bibtex to include citation/bibliography")
 	:action(function(args)
 		io.write("[DEBUG] building for bibtex")
-		os.execute([[cd ./src/ && pdflatex main.tex && bibtex main && pdflatex main.tex]])
+		os.execute([[cd ./src/ && pdflatex main.tex && biber main && pdflatex main.tex]])
 	end)
 
 parser:flag("-t --tree-view"):description("list directory structure and files in tree format"):action(function(args)
