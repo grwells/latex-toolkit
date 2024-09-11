@@ -10,8 +10,8 @@
 --   |
 --   |
 --   *--> src/
---   |        makefile
---   |        <latex source files>.tex
+--   |        main.tex
+--   |        <?> beamer/latex theme files
 --   |
 --   |
 --   *--> include/
@@ -29,10 +29,18 @@
 --   *--> scripts/
 --]]
 
+--[[
 -- FLAGS
--- these are flags for operation, the default unset value is nil, otherwise expect boolean
+--      These are flags for compile time arguments, the default unset value is nil, otherwise expect boolean.
+--]] 
 enable_shell_escape = nil
+include_beamer_theme = nil
+project_path = nil
 
+--[[
+-- Helper Functions
+--      These functions provide modular operations that are fundamental for different arguments 
+--]]
 function make_directory_structure(base)
 	-- make directory structure, substituting in base as project name
 	mkdir_cmd_str = string.format(
@@ -47,12 +55,51 @@ function make_directory_structure(base)
 	os.execute(string.format("touch ./%s/src/main.tex", base))
 end
 
+function add_beamer_theme(theme_path)
+    -- copy a beamer theme to the project source folder
+    --  a) copy single file
+    --  b) copy set of files in directory including something like
+    --      * beamertheme<themename>.sty
+    --      * title-background/default-background.jpg
+    --      * logos/default-logo<option number>
+    
+    if project_path == nil then
+        -- set project path if not known
+        project_path = infer_project_name()
+    end
+
+    dest_path = project_path .. "/src"
+
+    if string.find(theme_path, ".sty") == nil then
+        -- if path doesn't contain .sty, 
+        copy_directory_contents(theme_path, dest_path)  
+    else
+        -- if path ends in `.sty` -> file
+        copy_file(theme_path, dest_path)
+    end
+end
+
+function copy_directory_contents(src_dir_path, dest_dir_path)
+    -- copy all files (recursive) from source directory to destination directory
+    cmd_str = string.format("cp -r %s/* %s",
+        src_dir_path,
+        dest_dir_path
+    )
+    os.execute(cmd_str)
+end
+
+function copy_file(src_file_path, dest_path)
+    -- copy one file at source path to directory in destination path
+    os.execute(string.format("cp %s %s"), src_file_path, dest_path)
+end
+
 function clone_latex_toolkit()
 	-- clone toolkit from github
 	os.execute([[git clone https://github.com/grwells/latex-toolkit.git ./scripts]])
 end
 
 function file_exists(name)
+    -- check if file path exists, return bool
 	local f = io.open(name, "r")
 	if f ~= nil then
 		io.close(f)
@@ -96,7 +143,10 @@ local argparse = require("argparse")
 -- [[
 -- Define arguments and flags for this program to be printed by argparse.
 -- ]]
-local parser = argparse():name("LaTeX - Toolkit"):description([[
+local parser = argparse()
+                :name("LaTeX - Toolkit")
+                :add_complete()
+                :description([[
 ██╗      █████╗ ████████╗███████╗██╗  ██╗              ████████╗██╗  ██╗
 ██║     ██╔══██╗╚══██╔══╝██╔════╝╚██╗██╔╝              ╚══██╔══╝██║ ██╔╝
 ██║     ███████║   ██║   █████╗   ╚███╔╝     █████╗       ██║   █████╔╝ 
@@ -114,22 +164,40 @@ Simple Usage -> ltk -b -g -v
 ]])
 
 parser
+	:flag("--add-theme")
+	:description("copy theme file(s) to project src folder from path")
+	:args("1+")
+	:action(function(args, index, arg_array, overwrite_flag)
+		io.write("\n[DEBUG] LTK importing theme files from: ", arg_array[1])
+
+
+        add_beamer_theme(arg_array[1])
+    
+        --print("\nadd theme args contents:\n\t", table.concat(args), index, arg_array, overwrite_flag)
+        --print("first & second in array", arg_array[0], arg_array[1], arg_array[2])
+        --print("args.add_theme = ", args.add_theme);
+end)
+
+parser
 	:flag("-b --build-bibliography")
 	:description("compiles with biber to include citation/bibliography, requires pdflatex/latex be run after to generate output")
 	:action(function(args)
-		io.write("[DEBUG] building for bibtex")
+		io.write("\n[DEBUG] building for bibtex")
 		os.execute([[cd ./src/ && biber main]])
 	end)
 
-parser:flag("-c --word-count"):description("print word count summary by section"):action(function(args)
-	os.execute([[texcount ./src/main.tex]])
+parser
+    :flag("-c --word-count")
+    :description("print word count summary by section")
+    :action(function(args)
+        os.execute([[texcount ./src/main.tex]])
 end)
 
 parser
 	:flag("-e --escape-shell")
 	:description("set the -shell-escape flag for pdflatex, this is required for packages such as minted, tikz, etc. to run external tools")
 	:action(function(args)
-		io.write("[DEBUG] LTK setting enabling external tools with -shell-escape option")
+		io.write("\n[DEBUG] LTK setting enabling external tools with -shell-escape option")
         enable_shell_escape = true
 	end)
 
@@ -141,16 +209,16 @@ parser
         if enable_shell_escape == nil then
             -- enable_shell_escape is undeclared
             -- compile without shell escape (default)
-            io.write("[DEBUG] shell escape nil")
+            io.write("\n[DEBUG] shell escape nil")
             os.execute([[cd ./src/ && pdflatex main.tex]])
         elseif enable_shell_escape == true then
             -- enable shell escape
-            io.write("[DEBUG] shell escape true")
+            io.write("\n[DEBUG] shell escape true")
             os.execute([[cd ./src/ && pdflatex --shell-escape main.tex]])
         elseif enable_shell_escape == false then
             -- absolutely disable all shell escape dependent behavior
             -- WARNING: will disable packages such as bibtex
-            io.write("[DEBUG] shell escape false")
+            io.write("\n[DEBUG] shell escape false")
             os.execute([[cd ./src/ && pdflatex --no-shell-escape main.tex]])
         end
 
@@ -164,7 +232,8 @@ parser
 	:flag("-o --open-document")
 	:description("open the LaTeX document in ./src/ in NeoVim for editing")
 	:action(function(args)
-		os.execute([[nvim +TZAtaraxis ./src/main.tex]])
+		--os.execute([[nvim +TZAtaraxis ./src/main.tex]])
+		os.execute([[nvim ./src/main.tex]])
 	end)
 
 parser
@@ -191,11 +260,12 @@ parser
         "\n========================================================\n\tNew LaTeX Project: ./%s\n========================================================",
         fn[1]
         )
+        project_path = fn[1]
 		io.write(project_str)
 		make_directory_structure(fn[1])
         -- print the file tree for the new directory
         cd_dir_str = string.format(
-            "cd ./%s" ,
+            "cd ./%s",
             fn[1]
         )
         cd_dir_str = cd_dir_str .. [[ && find . | sed -e "s/[^-][^\/]*\//  |/g" -e "s/|\([^ ]\)/|-\1/"]]
@@ -203,3 +273,4 @@ parser
 	end)
 
 local args = parser:parse()
+
