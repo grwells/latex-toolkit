@@ -157,7 +157,7 @@ function increment_version_str(current_ver, increment_type)
 	local minor_ver = tonumber(versions[2])
 	local patch_ver = tonumber(versions[3])
 
-	print("[DEBUG] versions:", major_ver, minor_ver, patch_ver)
+	print(string.format("[DEBUG] current version: v%i.%i.%i", major_ver, minor_ver, patch_ver))
 
 	if increment_type == "p" then
 		-- increment patch
@@ -168,12 +168,12 @@ function increment_version_str(current_ver, increment_type)
 		major_ver = major_ver + 1
 		minor_ver = 0
 		patch_ver = 0
-		print("[DEBUG] increment major", major_ver)
+		print(string.format("[DEBUG] increment major %i -> %i", major_ver - 1, major_ver))
 	else
 		-- increment minor
 		minor_ver = minor_ver + 1
 		patch_ver = 0
-		print("[DEBUG] increment minor", minor_ver)
+		print(string.format("[DEBUG] increment minor", minor_ver - 1, minor_ver))
 	end
 
 	return string.format("v%i.%i.%i", major_ver, minor_ver, patch_ver)
@@ -321,9 +321,12 @@ parser
 
 parser
 	:flag("--inc-version")
-	:description("create a new version of the project, i.e. create a commit, increment the version and add tag")
+	:description(
+		"create a new version of the project, i.e. create a commit, increment the version and add tag, fails on tag conflict"
+	)
 	:args("?")
 	:action(function(args, _, fn)
+		-- note, will fail for tag conflicts
 		-- add all files in root and subdirectories of project
 		os.execute([[git add *]])
 		-- initial commit, don't supply message so user can add
