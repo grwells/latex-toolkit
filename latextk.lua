@@ -320,17 +320,20 @@ parser
 	end)
 
 parser
-	:flag("--inc-version")
+	:option("--inc-version")
 	:description(
 		"create a new version of the project, i.e. create a commit, increment the version and add tag, fails on tag conflict"
 	)
+	:choices({ "p", "ma", "mi" })
 	:args("?")
 	:action(function(args, _, fn)
 		-- note, will fail for tag conflicts
 		-- add all files in root and subdirectories of project
-		os.execute([[git add *]])
+		local ret = os.execute([[git add *]])
+		print("[DEBUG] git add returnd: ", ret)
 		-- initial commit, don't supply message so user can add
-		os.execute([[git commit]])
+		ret = os.execute([[git commit]])
+		print("[DEBUG] git commit returnd: ", ret)
 		-- get the latest tag
 		-- most recent tag `git describe --tags --abbrev=0 # 0.1.0-dev
 		-- most recent annotated tag `git describe --abbrev=0`
