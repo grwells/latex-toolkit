@@ -341,7 +341,7 @@ parser
 
 		print("[DEBUG] new version string:", new_ver)
 		-- tag this as new version
-		os.execute("git tag" .. new_ver)
+		os.execute("git tag " .. new_ver)
 	end)
 
 parser:flag("-p --print-pdf"):description("print generated pdf on default printer"):action(function(args)
