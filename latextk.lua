@@ -334,20 +334,28 @@ parser
 		-- initial commit, don't supply message so user can add
 		ret = os.execute([[git commit]])
 		print("[DEBUG] git commit returnd: ", ret)
-		-- get the latest tag
-		-- most recent tag `git describe --tags --abbrev=0 # 0.1.0-dev
-		-- most recent annotated tag `git describe --abbrev=0`
-		local fp = io.popen("git describe --tags --abbrev=0", "r")
-		local ver = fp:read("*a")
-		ver = string.sub(ver, 1, -2) -- remove newline character
 
-		-- increment major/minor/patch based on argument to function
-		local ver_inc_type = fn[1]
-		local new_ver = increment_version_str(ver, ver_inc_type)
+		if ret ~= 0 then
+			-- print error and end because nothing to commit
+			--  no commit means incrementing will create tag that points to potentially already tagged commit
+			--  this could cause conflicts
+			print("[DEBUG] error, nothing to commit aborting tag creation")
+		else
+			-- get the latest tag
+			-- most recent tag `git describe --tags --abbrev=0 # 0.1.0-dev
+			-- most recent annotated tag `git describe --abbrev=0`
+			local fp = io.popen("git describe --tags --abbrev=0", "r")
+			local ver = fp:read("*a")
+			ver = string.sub(ver, 1, -2) -- remove newline character
 
-		print("[DEBUG] new version string:", new_ver)
-		-- tag this as new version
-		os.execute("git tag " .. new_ver)
+			-- increment major/minor/patch based on argument to function
+			local ver_inc_type = fn[1]
+			local new_ver = increment_version_str(ver, ver_inc_type)
+
+			print("[DEBUG] new version string:", new_ver)
+			-- tag this as new version
+			os.execute("git tag " .. new_ver)
+		end
 	end)
 
 parser:flag("-p --print-pdf"):description("print generated pdf on default printer"):action(function(args)
