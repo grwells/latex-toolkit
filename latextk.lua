@@ -138,6 +138,47 @@ function infer_project_name(t)
 	return base
 end
 
+function split_str(input_str, sep)
+	if sep == nil then
+		sep = "%s"
+	end
+
+	local t = {}
+	for str in string.gmatch(input_str, "([^" .. sep .. "]+)") do
+		table.insert(t, str)
+	end
+	return t
+end
+
+function increment_version_str(current_ver, increment_type)
+	-- increment the version string patch/minor/major and return new version string
+	local versions = split_str(string.sub(current_ver, 2), ".")
+	local major_ver = tonumber(versions[1])
+	local minor_ver = tonumber(versions[2])
+	local patch_ver = tonumber(versions[3])
+
+	print("[DEBUG] versions:", major_ver, minor_ver, patch_ver)
+
+	if increment_type == "p" then
+		-- increment patch
+		patch_ver = patch_ver + 1
+		print("[DEBUG] increment patch", patch_ver)
+	elseif increment_type == "ma" then
+		-- increment major
+		major_ver = major_ver + 1
+		minor_ver = 0
+		patch_ver = 0
+		print("[DEBUG] increment major", major_ver)
+	else
+		-- increment minor
+		minor_ver = minor_ver + 1
+		patch_ver = 0
+		print("[DEBUG] increment minor", minor_ver)
+	end
+
+	return string.format("v%i.%i.%i", major_ver, minor_ver, patch_ver)
+end
+
 local argparse = require("argparse")
 
 -- [[
@@ -225,14 +266,22 @@ parser
 		"export the current version of the document, src/main.pdf, to ./<project_name>_<version_str>_<date>.pdf"
 	)
 	:action(function(args)
-		io.write("\n[DEBUG] exporting document")
 		-- get document version string
-		os.execute([[git tag --list]])
+		-- most recent tag `git describe --tags --abbrev=0 # 0.1.0-dev
+		-- most recent annotated tag `git describe --abbrev=0`
+		local fp = io.popen("git describe --tags --abbrev=0", "r")
+		local ver = fp:read("*a")
+		ver = string.sub(ver, 1, -2) -- remove newline character
+		-- print(string.format("output = '%s'", base))
+
 		-- get date string
 		local date_str = os.date("%m-%d-%Y")
+
 		-- write document to output file in project root
-		local fn_str = string.format("%s_%s_%s.pdf", infer_project_name({ silent = true }), "<version_str>", date_str)
-		print("[DEBUG] exporting -> " .. fn_str)
+		local fn_str = string.format("%s_%s_%s.pdf", infer_project_name({ silent = true }), ver, date_str)
+		print("[DEBUG] exporting file -> ./" .. fn_str)
+
+		os.execute(string.format("cp src/main.pdf ./%s", fn_str))
 	end)
 
 parser
@@ -271,15 +320,28 @@ parser
 	end)
 
 parser
-	:flag("--version")
+	:flag("--inc-version")
 	:description("create a new version of the project, i.e. create a commit, increment the version and add tag")
-	:action(function(args)
+	:args("?")
+	:action(function(args, _, fn)
 		-- add all files in root and subdirectories of project
 		os.execute([[git add *]])
 		-- initial commit, don't supply message so user can add
 		os.execute([[git commit]])
-		-- tag this as initial version, v0.0.0
-		os.execute([[git tag v0.0.0]])
+		-- get the latest tag
+		-- most recent tag `git describe --tags --abbrev=0 # 0.1.0-dev
+		-- most recent annotated tag `git describe --abbrev=0`
+		local fp = io.popen("git describe --tags --abbrev=0", "r")
+		local ver = fp:read("*a")
+		ver = string.sub(ver, 1, -2) -- remove newline character
+
+		-- increment major/minor/patch based on argument to function
+		local ver_inc_type = fn[1]
+		local new_ver = increment_version_str(ver, ver_inc_type)
+
+		print("[DEBUG] new version string:", new_ver)
+		-- tag this as new version
+		os.execute("git tag" .. new_ver)
 	end)
 
 parser:flag("-p --print-pdf"):description("print generated pdf on default printer"):action(function(args)
