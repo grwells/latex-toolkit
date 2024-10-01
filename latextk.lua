@@ -162,7 +162,7 @@ function increment_version_str(current_ver, increment_type)
 	if increment_type == "p" then
 		-- increment patch
 		patch_ver = patch_ver + 1
-		print("[DEBUG] increment patch", patch_ver)
+		print(string.format("[DEBUG] increment patch %i -> %i", patch_ver - 1, patch_ver))
 	elseif increment_type == "ma" then
 		-- increment major
 		major_ver = major_ver + 1
