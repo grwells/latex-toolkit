@@ -6,6 +6,9 @@ This is a Lua script which can be used to manage and standardize the file struct
 
 ![help options](images/help_output.png)
 
+# Dependencies
+- [argparse](https://luarocks.org/modules/argparse/argparse) command line arguments parsing and other cool stuff.
+
 # Installation
 
 Clone repository and run installation script with:
@@ -27,3 +30,5 @@ $ latextk -h
 1. Config file to pass startup commands to vim/neovim after startup. See [commands](https://neovim.io/doc/user/starting.html) documentation for passing commands to neovim from command line. Ex. `nvim "+set cc=80" <filename>`.
 
 2. Project export as an archive/zipped archive. This would reduce file size, make more transportable with git directories, _etc._
+
+3. Option/Command/Argument Completion. It would be nice to have command completion via tabs in commmand line. Currently broken, not sure why.
