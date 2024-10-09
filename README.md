@@ -23,4 +23,7 @@ $ ltk -h
 $ latextk -h
 ```
 
+# Future Feature Ideas
+1. Config file to pass startup commands to vim/neovim after startup. See [commands](https://neovim.io/doc/user/starting.html) documentation for passing commands to neovim from command line. Ex. `nvim "+set cc=80" <filename>`.
 
+2. Project export as an archive/zipped archive. This would reduce file size, make more transportable with git directories, _etc._
