@@ -290,12 +290,16 @@ parser
 		local fp = io.popen("git describe --tags --abbrev=0", "r")
 
 		-- set default version value
-		local ver = "v0.0"
+		local ver = ""
 		if fp ~= nil then
 			ver = fp:read("*a")
 			ver = string.sub(ver, 1, -2) -- remove newline character
 		end
 		-- print(string.format("output = '%s'", base))
+
+		if ver == "" then
+			ver = "v0.0"
+		end
 
 		-- get date string
 		local date_str = os.date("%m-%d-%Y")
