@@ -10,19 +10,18 @@ This is a Lua script which can be used to manage and standardize the file struct
 - [argparse](https://luarocks.org/modules/argparse/argparse) command line arguments parsing and other cool stuff.
 - [LuaLogging](https://lunarmodules.github.io/lualogging/) API for logging in Lua.
 
-Installing with luarocks:
+### Installing with LuaRocks
 
 ```bash
+# to install luarocks
 sudo apt install luarocks 
+
 luarocks install argparse lualogging
 # or 
 luarocks install --local argparse lualogging
 ```
-```
 
 # Installation
-
-Clone repository and run installation script with:
 
 ```bash
 git clone https://github.com/grwells/latex-toolkit.git &&
