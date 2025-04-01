@@ -10,14 +10,14 @@ This is a Lua script which can be used to manage and standardize the file struct
 - [argparse](https://luarocks.org/modules/argparse/argparse) command line arguments parsing and other cool stuff.
 - [LuaLogging](https://lunarmodules.github.io/lualogging/) API for logging in Lua.
 
->[!note] 
-> Installing with luarocks:
-> ```bash
-> sudo apt install luarocks 
-> luarocks install argparse lualogging
-> # or 
-> luarocks install --local argparse lualogging
-> ```
+Installing with luarocks:
+
+```bash
+sudo apt install luarocks 
+luarocks install argparse lualogging
+# or 
+luarocks install --local argparse lualogging
+```
 ```
 
 # Installation
@@ -43,12 +43,4 @@ $ latextk -h
 2. Project export as an archive/zipped archive. This would reduce file size, make more transportable with git directories, _etc._
 
 3. Option/Command/Argument Completion. It would be nice to have command completion via tabs in commmand line. Currently broken, not sure why.
-
-```mermaid
-graph TD;
-    A-->B;
-    A-->C;
-    B-->D;
-    C-->D;
-```
 
