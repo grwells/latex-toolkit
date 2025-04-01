@@ -8,6 +8,17 @@ This is a Lua script which can be used to manage and standardize the file struct
 
 # Dependencies
 - [argparse](https://luarocks.org/modules/argparse/argparse) command line arguments parsing and other cool stuff.
+- [LuaLogging] API for logging in Lua.
+
+>[!note] 
+> Installing with luarocks:
+> ```bash
+> sudo apt install luarocks 
+> luarocks install argparse lualogging
+> # or 
+> luarocks install --local argparse lualogging
+>```
+```
 
 # Installation
 
