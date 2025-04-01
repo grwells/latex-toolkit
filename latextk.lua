@@ -388,6 +388,13 @@ parser
 		end
 	end)
 
+parser
+	:flag("--ofm --open-file-manager")
+	:description("Opens current directory in system file manager using xdg-open")
+	:action(function(args)
+		os.execute([[xdg-open .]])
+	end)
+
 parser:flag("-p --print-pdf"):description("print generated pdf on default printer"):action(function(args)
 	os.execute([[lpr ./src/main.pdf]])
 end)
