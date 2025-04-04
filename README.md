@@ -2,6 +2,9 @@
 
 This is a Lua script which can be used to manage and standardize the file structure of your LaTeX projects on the command line.
 
+>[!note]
+> Project notes on neovim tips and other helpful technical bits learned through this project: [notes](./project/notes.md)
+
 ### Example Output
 
 ![help options](images/help_output.png)

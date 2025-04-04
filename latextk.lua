@@ -404,7 +404,10 @@ parser
 	:description("open the LaTeX document in ./src/ in NeoVim for editing")
 	:action(function(args)
 		--os.execute([[nvim +TZAtaraxis ./src/main.tex]])
-		os.execute([[nvim ./src/main.tex]])
+
+		-- open document, set line wrap based on window width, break on words, not letters
+		-- from https://stackoverflow.com/questions/36950231/auto-wrap-lines-in-vim-without-inserting-newlines
+		os.execute([[nvim "+set textwidth=0 | set wrapmargin=0 | set wrap | set linebreak" ./src/main.tex]])
 	end)
 
 parser
