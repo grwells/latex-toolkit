@@ -5,9 +5,9 @@ This file is a compilation of notes and technical bits learned during this proje
 # Neovim Pass Settings Via Commandline
 
 ```bash
-nvim "+set <param>=<value>"
+nvim "+set <param>=<value>" <file-name-here>
 # to set multiple params in one line...
-nvim "+set <param0>=<value> | <param1>=<value> | ..."
+nvim "+set <param0>=<value> | <param1>=<value> | ..." <file-name-here>
 ```
 
 
