@@ -2,6 +2,15 @@
 
 This file is a compilation of notes and technical bits learned during this project.
 
+# Neovim Pass Settings Via Commandline
+
+```bash
+nvim "+set <param>=<value>"
+# to set multiple params in one line...
+nvim "+set <param0>=<value> | <param1>=<value> | ..."
+```
+
+
 
 # Neovim Auto Line Wrap
 
