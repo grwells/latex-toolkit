@@ -27,6 +27,7 @@ luarocks install --local argparse lualogging
 # Installation
 
 ```bash
+# clone and copy script to local/bin/share, link latextk to ltk
 git clone https://github.com/grwells/latex-toolkit.git &&
 ./install.sh
 ```
