@@ -149,7 +149,7 @@ function infer_project_name(t)
 	txt = string.format("Project Name: %s", base)
 	cap = string.rep("*", string.len(txt) + 2)
 
-	if not silent then
+	if not t["silent"] then
 		io.write(cap, "\n", txt, " *\n", cap, "\n")
 	end
 
@@ -175,26 +175,30 @@ function increment_version_str(current_ver, increment_type)
 	local minor_ver = tonumber(versions[2])
 	local patch_ver = tonumber(versions[3])
 
-	logger:info(string.format("current version: v%i.%i.%i", major_ver, minor_ver, patch_ver))
+	local old_ver = string.format("v%i.%i.%i", major_ver, minor_ver, patch_ver)
 
 	if increment_type == "p" then
 		-- increment patch
 		patch_ver = patch_ver + 1
-		logger:info(string.format("increment patch %i -> %i", patch_ver - 1, patch_ver))
+		--logger:info(string.format("increment patch %i -> %i", patch_ver - 1, patch_ver))
 	elseif increment_type == "ma" then
 		-- increment major
 		major_ver = major_ver + 1
 		minor_ver = 0
 		patch_ver = 0
-		logger:info(string.format("increment major %i -> %i", major_ver - 1, major_ver))
+		--logger:info(string.format("increment major %i -> %i", major_ver - 1, major_ver))
 	else
 		-- increment minor
 		minor_ver = minor_ver + 1
 		patch_ver = 0
-		logger:info(string.format("increment minor", minor_ver - 1, minor_ver))
+		--logger:info(string.format("increment minor", minor_ver - 1, minor_ver))
 	end
 
-	return string.format("v%i.%i.%i", major_ver, minor_ver, patch_ver)
+	local new_ver = string.format("v%i.%i.%i", major_ver, minor_ver, patch_ver)
+
+	logger:info(old_ver .. " -> " .. new_ver)
+
+	return new_ver
 end
 
 local argparse = require("argparse")
@@ -363,7 +367,7 @@ parser
 		logger:info("git add returnd: ", ret)
 		-- initial commit, don't supply message so user can add
 		ret = os.execute([[git commit]])
-		logger:info("git commit returnd: ", ret)
+		--logger:info("git commit returned: ", ret)
 
 		if ret ~= 0 then
 			-- print error and end because nothing to commit
@@ -382,9 +386,22 @@ parser
 			local ver_inc_type = fn[1]
 			local new_ver = increment_version_str(ver, ver_inc_type)
 
-			logger:info("new version string:", new_ver)
 			-- tag this as new version
 			os.execute("git tag " .. new_ver)
+
+			-- build command string for file backup and rename
+			local date_str = os.date("%m-%d-%Y")
+			local backup = "cp src/main.tex backup/"
+				.. infer_project_name({ silent = true })
+				.. "_"
+				.. new_ver
+				.. "_"
+				.. date_str
+				.. ".tex"
+
+			ret = os.execute(backup)
+
+			logger:info("backup created under new version")
 		end
 	end)
 

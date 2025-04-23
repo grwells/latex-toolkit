@@ -44,4 +44,5 @@ $ latextk -h
 
 - [ ] Project export as an archive/zipped archive. This would reduce file size, make more transportable with git directories, _etc._
 - [ ] Option/Command/Argument Completion. LuaArgparse generates completion script, installing on system requires command name match... needs some fiddling.
+- [x] Source Code Backup. Make backups of source code tagged with version/date in the `backup` directory.
 
